@@ -3,3 +3,8 @@
 {% for answer in answers %}
     <p> {{ answer.text }} </p>
 {% endfor %}
+<form action={{ question.get_url }} method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>

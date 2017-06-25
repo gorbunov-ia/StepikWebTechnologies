@@ -1,0 +1,6 @@
+<h1>Add new question</h1>
+<form action="/ask/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
