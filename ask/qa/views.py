@@ -2,7 +2,10 @@
 #from __future__ import unicode_literals
 
 # Create your views here.
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
 
 def test(request, *args, **kwargs):
@@ -10,11 +13,12 @@ def test(request, *args, **kwargs):
 
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from django.views.decorators.http import require_GET
 from qa.models import Question, Answer
 from qa.forms import AnswerForm
 
 #@require_GET
+@login_required
 def question_info(request, q_id):
     question = get_object_or_404(Question, id = q_id)
     try:
@@ -24,8 +28,9 @@ def question_info(request, q_id):
 
     if request.method == 'POST':
         form = AnswerForm(request.POST)
-        form.question = q_id
         if form.is_valid():
+            form._user = request.user
+            form.question = q_id
             form.save()
             return HttpResponseRedirect(question.get_url())
     else:
@@ -84,10 +89,12 @@ def questions_popular(request):
 from qa.forms import AskForm
 
 
+@login_required
 def question_add(request):
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
+            form._user = request.user
             question = form.save()
             return HttpResponseRedirect(question.get_url())
     else:
@@ -97,5 +104,25 @@ def question_add(request):
             'form' : form
         })
 
+from qa.forms import SignupForm
 
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if form.is_valid():
+            user_new = form.save()
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+            return HttpResponseRedirect(reverse('questions_new'))
+    else:
+        form = SignupForm()
+
+    return render(request, 'registration/signup.html', {
+        "form": form
+    })
+
+#def login(request):
 

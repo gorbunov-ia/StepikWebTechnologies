@@ -15,14 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from qa.views import test, question_info, questions_new, questions_popular, question_add
+from qa.views import test, question_info, questions_new, questions_popular, question_add,signup
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     #,name='' -reverse routing
-    url(r'^$', questions_new),
-    url(r'^login/$', test),
-    url(r'^signup/$', test),
+    url(r'^$', questions_new, name='questions_new'),
+    url(r'^login/$', auth_views.LoginView.as_view()),
+    #url(r'^logout/$', auth_views.LogoutView.as_view()),
+    url(r'^signup/$', signup),
     url(r'^question/(?P<q_id>\d+)/$', question_info, name='question-info'),
     url(r'^ask/$', question_add, name='question_add'),
     url(r'^popular/$', questions_popular),

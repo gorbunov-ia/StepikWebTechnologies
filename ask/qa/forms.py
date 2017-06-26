@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 
 from qa.models import Question, Answer
 
@@ -7,12 +8,16 @@ class AskForm(forms.Form):
     title = forms.CharField(max_length=255)
     text = forms.CharField(widget=forms.Textarea)
 
+    # def __init__(self, user, **kwargs):
+    #     self._user = user
+    #     super(AskForm, self).__init__(**kwargs)
+
     def clean(self):
         return self.cleaned_data
 
     def save(self):
+        self.cleaned_data['author'] = self._user
         question = Question(**self.cleaned_data)
-        question.author_id = 1
         question.save()
         return question
 
@@ -26,15 +31,36 @@ class AnswerForm(forms.Form):
         return self.cleaned_data
 
     def save(self):
-        #answer = Answer(**self.cleaned_data)
-        answer = Answer()
-        answer.text = self.cleaned_data['text']
-        #answer.question_id = self.cleaned_data['question']
+        self.cleaned_data['author'] = self._user
+        #self.cleaned_data['question'] = self._question
+        answer = Answer(**self.cleaned_data)
+        #answer = Answer()
+        #answer.text = self.cleaned_data['text']
+        #answer.question_id = self._question
         answer.question_id = self.question
-        answer.author_id = 1
-        #answer.question_id = self.changed_data.__getattribute__('question')
+        #answer.author_id = self._user
+        #answer.author_id = self.cleaned_data['author']
         answer.save()
         return answer
 
+class SignupForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
 
+    def clean(self):
+        cleaned_data = super(SignupForm, self).clean()
+        username = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+        return self.cleaned_data
+
+    def save(self):
+        #user = User.objects.create_user(self.cleaned_data['username'],None,self.cleaned_data['password'])
+        user = User()
+        user.username = self.cleaned_data['username']
+        user.password = self.cleaned_data['password']
+        user.save()
+        return user
+
+    class Meta:
+        model = User
 
