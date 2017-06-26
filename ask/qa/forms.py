@@ -45,11 +45,13 @@ class AnswerForm(forms.Form):
 
 class SignupForm(forms.Form):
     username = forms.CharField()
+    email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput())
 
     def clean(self):
         cleaned_data = super(SignupForm, self).clean()
         username = cleaned_data.get("username")
+        email = cleaned_data.get("email")
         password = cleaned_data.get("password")
         return self.cleaned_data
 
@@ -57,6 +59,7 @@ class SignupForm(forms.Form):
         #user = User.objects.create_user(self.cleaned_data['username'],None,self.cleaned_data['password'])
         user = User()
         user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data['email']
         user.password = self.cleaned_data['password']
         user.save()
         return user

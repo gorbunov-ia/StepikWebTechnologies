@@ -19,10 +19,9 @@ from qa.views import test, question_info, questions_new, questions_popular, ques
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
-    #,name='' -reverse routing
     url(r'^$', questions_new, name='questions_new'),
-    url(r'^login/$', auth_views.LoginView.as_view()),
+    #url(r'^login/$', auth_views.LoginView.as_view()), #django 1.11
+    url(r'^login/$', auth_views.login), #django 1.10
     #url(r'^logout/$', auth_views.LogoutView.as_view()),
     url(r'^signup/$', signup),
     url(r'^question/(?P<q_id>\d+)/$', question_info, name='question-info'),
