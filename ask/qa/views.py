@@ -89,11 +89,10 @@ def questions_popular(request):
 from qa.forms import AskForm
 
 
-@login_required
 def question_add(request):
     if request.method == 'POST':
         form = AskForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and request.user.is_authenticated:
             form._user = request.user
             question = form.save()
             return HttpResponseRedirect(question.get_url())
