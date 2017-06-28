@@ -109,15 +109,14 @@ from qa.forms import SignupForm
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        username = request.POST['username']
+        password = request.POST['password']
         if form.is_valid():
             user_new = form.save()
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-            return HttpResponseRedirect(reverse('questions_new'))
+                return HttpResponseRedirect(reverse('questions_new'))
     else:
         form = SignupForm()
 
